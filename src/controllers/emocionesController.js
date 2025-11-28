@@ -5,8 +5,7 @@ export const getEmociones = async (req, res) => {
     const [rows] = await pool.query("SELECT * FROM emociones");
     res.json(rows);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener emociones" });
+       next(error); 
   }
 };
 
@@ -32,10 +31,6 @@ export const createEmocion = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("ERROR CREANDO EMOCIÓN:", error);
-    res.status(500).json({
-      message: "Error al crear la emoción",
-      error,
-    });
+     next(error);
   }
 };

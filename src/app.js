@@ -11,6 +11,7 @@ import usuariosRoutes from "./routes/usuarios.routes.js";
 import rolesRoutes from "./routes/roles.routes.js";
 import emocionesRoutes from "./routes/emociones.routes.js";
 import cancionesRoutes from "./routes/canciones.routes.js";
+import { errorHandler } from "./Middleware/error.middleware.js";
 
 dotenv.config();
 
@@ -54,18 +55,19 @@ export const pool = mysql.createPool({
 });
 
 // Ruta de prueba BD
-app.get("/db-check", async (req, res) => {
-    try {
-        const [rows] = await pool.query("SELECT 1 + 1 AS resultado");
-        res.json({ message: "Conexión a MySQL exitosa", resultado: rows[0] });
-    } catch (error) {
-        res.status(500).json({ message: "Error conectando a MySQL", error });
-    }
+app.get("/db-check", async (req, res, next) => {
+  try {
+    const [rows] = await pool.query("SELECT 1 + 1 AS resultado");
+    res.json({ message: "Conexión a MySQL exitosa", resultado: rows[0] });
+  } catch (error) {
+    next(error); // 👈 ahora pasa por el manejador global
+  }
 });
 
 // Ruta principal (¡OJO! si existe index.html en /public, se usará ese)
 app.get("/", (req, res) => {
     res.json({ message: "API MoodMusic funcionando 🎵" });
 });
+app.use(errorHandler);
 
 export default app;

@@ -7,10 +7,10 @@ import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
 
-// Cualquiera puede ver emociones
+
 router.get("/", getEmociones);
 
-// Solo ADMIN puede crear emociones + validaciones
+
 router.post(
   "/",
   authMiddleware,
