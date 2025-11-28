@@ -13,6 +13,7 @@ export const register = async (req, res) => {
     );
 
     if (existing.length > 0) {
+      return res.status(400).json({ message: "El correo ya está registrado" });
     }
 
     // Encriptar contraseña
@@ -24,9 +25,11 @@ export const register = async (req, res) => {
       [nombre, email, hashedPassword, rol_id]
     );
 
+    res.status(201).json({ message: "Usuario registrado correctamente" });
 
   } catch (error) {
-    res.status(500).json({ message: "Error en el registro", error });
+    console.error(error);
+    res.status(500).json({ message: "Error en el registro" });
   }
 };
 
@@ -53,11 +56,13 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Credenciales incorrectas" });
     }
 
-    // Crear token
+    // Crear token con id y rol_id
+    const payload = { id: user.id, rol_id: user.rol_id };
+
     const token = jwt.sign(
-      { id: user.id, rol_id: user.rol_id },
-      "SECRET_KEY",
-      { expiresIn: "1h" }
+      payload,
+      process.env.JWT_SECRET,   // 👈 aquí usamos el .env
+      { expiresIn: "2h" }       // puedes dejar 1h si quieres
     );
 
     res.json({
@@ -66,6 +71,7 @@ export const login = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: "Error en el login", error });
+    console.error(error);
+    res.status(500).json({ message: "Error en el login" });
   }
 };
