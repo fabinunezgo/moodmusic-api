@@ -1,21 +1,9 @@
-import express from "express";
-import EmocionesController from "../controllers/emociones.controller.js";
+import { Router } from "express";
+import { getEmociones, createEmocion } from "../controllers/emocionesController.js";
 
-const router = express.Router();
+const router = Router();
 
-// GET todas
-router.get("/", EmocionesController.getAll);
-
-// GET una
-router.get("/:id", EmocionesController.getById);
-
-// POST crear
-router.post("/", EmocionesController.create);
-
-// PUT actualizar
-router.put("/:id", EmocionesController.update);
-
-// DELETE eliminar
-router.delete("/:id", EmocionesController.delete);
+router.get("/", getEmociones);
+router.post("/", createEmocion);
 
 export default router;
