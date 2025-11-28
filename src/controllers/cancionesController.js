@@ -1,3 +1,14 @@
+import pool from "../config/db.js";
+
+export const getCanciones = async (req, res, next) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM canciones");
+    res.json(rows);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createCancion = async (req, res, next) => {
   try {
     const { titulo, artista, emocion_id } = req.body;
