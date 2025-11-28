@@ -5,10 +5,13 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import emocionesRoutes from "./src/routes/emociones.routes.js";
 
 dotenv.config();
 
 const app = express();
+// Rutas
+app.use("/api/emociones", emocionesRoutes);
 
 // Seguridad
 app.use(helmet());
