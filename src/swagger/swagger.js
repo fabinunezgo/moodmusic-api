@@ -7,7 +7,7 @@ const options = {
     info: {
       title: "MoodMusic API",
       version: "1.0.0",
-      description: "API para sugerir canciones segun emoción",
+      description: "API para sugerir canciones según emoción",
     },
     servers: [
       {
@@ -15,7 +15,7 @@ const options = {
       },
     ],
   },
-  apis: ["./src/routes/*.js"], 
+  apis: ["./src/swagger/*.yaml"],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);

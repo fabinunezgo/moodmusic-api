@@ -17,7 +17,6 @@ import {
 
 const router = Router();
 
-
 router.get("/", authMiddleware, isAdmin, getUsuarios);
 
 router.get("/:id", authMiddleware, isAdmin, getUsuarioById);

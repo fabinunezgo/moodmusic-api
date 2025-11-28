@@ -7,7 +7,6 @@ export const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "No se encontró el header Authorization" });
   }
 
-  // Esperamos: "Bearer token"
   const [scheme, token] = header.split(" ");
 
   if (scheme !== "Bearer" || !token) {
@@ -16,7 +15,6 @@ export const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // { id, rol_id, iat, exp }
     req.user = decoded;
     next();
   } catch (error) {

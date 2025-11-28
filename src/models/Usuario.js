@@ -1,7 +1,6 @@
 import pool from "../config/db.js";
 
 export const Usuario = {
-
     async create({ nombre, email, password, rol_id }) {
         const [result] = await pool.query(
             "INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)",

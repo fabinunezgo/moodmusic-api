@@ -1,4 +1,4 @@
-import pool from "../config/db.js";
+import { pool } from "../config/db.js";
 
 export const getEmociones = async (req, res) => {
   try {
@@ -12,7 +12,6 @@ export const getEmociones = async (req, res) => {
 export const createEmocion = async (req, res) => {
   try {
     const { nombre } = req.body;
-
     // Validación
     if (!nombre || nombre.trim() === "") {
       return res.status(400).json({

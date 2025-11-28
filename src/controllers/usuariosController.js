@@ -1,6 +1,5 @@
-import pool from "../config/db.js";
+import { pool } from "../config/db.js";
 import bcrypt from "bcrypt";
-
 
 export const getUsuarios = async (req, res, next) => {
   try {
@@ -13,9 +12,6 @@ export const getUsuarios = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/usuarios/:id
- */
 export const getUsuarioById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -37,11 +33,9 @@ export const getUsuarioById = async (req, res, next) => {
   }
 };
 
-
 export const createUsuario = async (req, res, next) => {
   try {
     const { nombre, email, password, rol_id } = req.body;
-
     // Verificar si ya existe el correo
     const [existe] = await pool.query(
       "SELECT id FROM usuarios WHERE email = ?",
@@ -52,7 +46,6 @@ export const createUsuario = async (req, res, next) => {
       err.status = 400;
       return next(err);
     }
-
     // Encriptar contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -91,7 +84,6 @@ export const updateUsuario = async (req, res, next) => {
 
     const usuario = rows[0];
 
-   
     const nuevoNombre = nombre ?? usuario.nombre;
     const nuevoEmail = email ?? usuario.email;
     let nuevoPassword = usuario.password;
@@ -117,9 +109,6 @@ export const updateUsuario = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /api/usuarios/:id
- */
 export const deleteUsuario = async (req, res, next) => {
   try {
     const { id } = req.params;

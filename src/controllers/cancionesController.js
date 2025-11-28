@@ -1,6 +1,4 @@
-import pool from "../config/db.js";
-
-
+import { pool } from "../config/db.js";
 export const getCanciones = async (req, res, next) => {
   try {
     const { emocion } = req.query; 
@@ -25,7 +23,6 @@ export const getCanciones = async (req, res, next) => {
   }
 };
 
-
 export const createCancion = async (req, res, next) => {
   try {
     const { titulo, artista, emocion_id } = req.body;
@@ -35,7 +32,6 @@ export const createCancion = async (req, res, next) => {
       err.status = 400;
       return next(err);
     }
-
 
     const [emociones] = await pool.query(
       "SELECT id FROM emociones WHERE id = ?",

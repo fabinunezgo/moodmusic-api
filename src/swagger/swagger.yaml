@@ -1,0 +1,255 @@
+openapi: 3.0.0
+info:
+  title: MoodMusic API
+  version: 1.0.0
+  description: API para sugerir canciones según emoción.
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Autenticación
+    description: Registro e inicio de sesión
+  - name: Usuarios
+    description: Gestión de usuarios (solo admin)
+  - name: Canciones
+    description: Operaciones relacionadas con canciones
+  - name: Emociones
+    description: Gestión de emociones
+  - name: Roles
+    description: Gestión de roles
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Autenticación
+      summary: Registrar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: Usuario registrado
+        400:
+          description: Error de validación
+
+  /api/auth/login:
+    post:
+      tags:
+        - Autenticación
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Sesión iniciada
+        401:
+          description: Credenciales incorrectas
+
+  /api/usuarios:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener todos los usuarios (solo admin)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de usuarios
+
+    post:
+      tags:
+        - Usuarios
+      summary: Crear usuario (solo admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                rol_id:
+                  type: integer
+      responses:
+        201:
+          description: Usuario creado
+
+  /api/usuarios/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener usuario por ID (solo admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Usuario encontrado
+        404:
+          description: No encontrado
+
+    put:
+      tags:
+        - Usuarios
+      summary: Actualizar usuario (solo admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: Usuario actualizado
+
+    delete:
+      tags:
+        - Usuarios
+      summary: Eliminar usuario (solo admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Usuario eliminado
+
+  /api/canciones:
+    get:
+      tags:
+        - Canciones
+      summary: Obtener canciones por emoción
+      parameters:
+        - in: query
+          name: emocion
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lista de canciones filtradas
+
+    post:
+      tags:
+        - Canciones
+      summary: Crear canción (solo admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                artista:
+                  type: string
+                emocion_id:
+                  type: integer
+      responses:
+        201:
+          description: Canción creada
+
+  /api/emociones:
+    get:
+      tags:
+        - Emociones
+      summary: Obtener todas las emociones
+      responses:
+        200:
+          description: Lista de emociones
+
+    post:
+      tags:
+        - Emociones
+      summary: Crear emoción (solo admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        201:
+          description: Emoción creada
+
+  /api/roles:
+    get:
+      tags:
+        - Roles
+      summary: Obtener roles
+      responses:
+        200:
+          description: Lista de roles
+
+    post:
+      tags:
+        - Roles
+      summary: Crear rol
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        201:
+          description: Rol creado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
