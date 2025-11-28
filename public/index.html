@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>MoodMusic 🎵</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <h1>MoodMusic 🎵</h1>
+  <p>Elige tu emoción y te sugerimos canciones.</p>
+
+  <section>
+    <label for="emocionSelect">Emoción:</label>
+    <select id="emocionSelect">
+      <option value="">-- Selecciona una emoción --</option>
+    </select>
+    <button id="btnBuscar">Buscar canciones</button>
+  </section>
+
+  <section>
+    <h2>Resultados</h2>
+    <ul id="listaCanciones">
+      <!-- Aquí se van a pintar las canciones -->
+    </ul>
+  </section>
+
+  <!-- 👉 SOLO AQUÍ se debe cargar app.js -->
+  <script src="app.js"></script>
+</body>
+</html>

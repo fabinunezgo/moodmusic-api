@@ -2,14 +2,22 @@ import { Router } from "express";
 import { getEmociones, createEmocion } from "../controllers/emocionesController.js";
 import { authMiddleware } from "../Middleware/auth.middleware.js";
 import { isAdmin } from "../Middleware/role.middleware.js";
-
+import { crearEmocionValidator } from "../validators/emociones.validators.js";
+import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
-// cualquiera puede ver emociones
+
+// Cualquiera puede ver emociones
 router.get("/", getEmociones);
 
-router.get("/", getEmociones);
-router.post("/", createEmocion);
-router.post("/", authMiddleware, isAdmin, createEmocion);
+// Solo ADMIN puede crear emociones + validaciones
+router.post(
+  "/",
+  authMiddleware,
+  isAdmin,
+  crearEmocionValidator,
+  validarCampos,
+  createEmocion
+);
 
 export default router;
