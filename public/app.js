@@ -4,7 +4,7 @@ const emocionSelect = document.getElementById("emocionSelect");
 const btnBuscar = document.getElementById("btnBuscar");
 const listaCanciones = document.getElementById("listaCanciones");
 
-// 1️⃣ Cargar emociones en el select
+
 async function cargarEmociones() {
   try {
     const res = await fetch(`${API_URL}/api/emociones`);
@@ -12,7 +12,7 @@ async function cargarEmociones() {
 
     emociones.forEach((emo) => {
       const option = document.createElement("option");
-      option.value = emo.nombre; // usamos el nombre de la emoción
+      option.value = emo.nombre; 
       option.textContent = emo.nombre;
       emocionSelect.appendChild(option);
     });
@@ -56,8 +56,8 @@ async function buscarCanciones() {
   }
 }
 
-// Eventos
+
 btnBuscar.addEventListener("click", buscarCanciones);
 
-// Cargar emociones al iniciar
+
 cargarEmociones();

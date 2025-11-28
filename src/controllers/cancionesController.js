@@ -1,19 +1,38 @@
-import pool from "../config/db.js";
+export const createCancion = async (req, res, next) => {
+  try {
+    const { titulo, artista, emocion_id } = req.body;
 
-export const getCanciones = async (req, res) => {
-  const [rows] = await pool.query(`
-    SELECT canciones.id, canciones.titulo, canciones.artista, emociones.nombre AS emocion
-    FROM canciones
-    LEFT JOIN emociones ON canciones.emocion_id = emociones.id
-  `);
-  res.json(rows);
-};
+    if (!titulo || !artista || !emocion_id) {
+      const err = new Error("Título, artista y emoción son obligatorios");
+      err.status = 400;
+      return next(err);
+    }
 
-export const createCancion = async (req, res) => {
-  const { titulo, artista, emocion_id } = req.body;
-  const [result] = await pool.query(
-    "INSERT INTO canciones (titulo, artista, emocion_id) VALUES (?, ?, ?)",
-    [titulo, artista, emocion_id]
-  );
-  res.json({ id: result.insertId, titulo, artista, emocion_id });
+    // Verificar emoción
+    const [emociones] = await pool.query(
+      "SELECT id FROM emociones WHERE id = ?",
+      [emocion_id]
+    );
+
+    if (emociones.length === 0) {
+      const err = new Error("La emoción indicada no existe");
+      err.status = 400;
+      return next(err);
+    }
+
+    const [result] = await pool.query(
+      "INSERT INTO canciones (titulo, artista, emocion_id) VALUES (?, ?, ?)",
+      [titulo, artista, emocion_id]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      titulo,
+      artista,
+      emocion_id
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
