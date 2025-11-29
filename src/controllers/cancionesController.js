@@ -19,7 +19,6 @@ export const createCancion = async (req, res, next) => {
       return next(err);
     }
 
-    // Verificar emoción
     const [emociones] = await pool.query(
       "SELECT id FROM emociones WHERE id = ?",
       [emocion_id]
@@ -40,10 +39,25 @@ export const createCancion = async (req, res, next) => {
       id: result.insertId,
       titulo,
       artista,
-      emocion_id
+      emocion_id,
     });
 
   } catch (error) {
     next(error);
+  }
+};
+
+export const buscarCanciones = async (req, res) => {
+  try {
+    const { nombre } = req.query;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM canciones WHERE titulo LIKE ?",
+      [`%${nombre}%`]
+    );
+
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: "Error al buscar canciones" });
   }
 };
