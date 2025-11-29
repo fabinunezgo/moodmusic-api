@@ -5,9 +5,8 @@ import { isAdmin } from "../Middleware/role.middleware.js";
 import { crearCancionValidator } from "../validators/canciones.validators.js";
 import { validarCampos } from "../Middleware/validator.middleware.js";
 
-
-
 const router = Router();
+
 
 router.get("/", getCanciones);
 
@@ -19,6 +18,5 @@ router.post(
   validarCampos,
   createCancion
 );
-
 
 export default router;

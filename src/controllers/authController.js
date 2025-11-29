@@ -1,4 +1,4 @@
-import pool from "../config/db.js";
+import { pool } from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -61,8 +61,8 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(
       payload,
-      process.env.JWT_SECRET,   // 👈 aquí usamos el .env
-      { expiresIn: "2h" }       // puedes dejar 1h si quieres
+      process.env.JWT_SECRET,   
+      { expiresIn: "2h" } 
     );
 
     res.json({

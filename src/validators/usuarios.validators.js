@@ -26,7 +26,6 @@ export const crearUsuarioValidator = [
     .withMessage("El rol debe ser un número entero"),
 ];
 
-// Para actualizar usuario (normalmente no obligamos password siempre)
 export const actualizarUsuarioValidator = [
   check("nombre")
     .optional()
