@@ -11,9 +11,10 @@ import rolesRoutes from "./routes/roles.routes.js";
 import emocionesRoutes from "./routes/emociones.routes.js";
 import cancionesRoutes from "./routes/canciones.routes.js";
 
-import pool from "./config/db.js";   // ← CORREGIDO
+import pool from "./config/db.js";
 import { errorHandler } from "./Middleware/error.middleware.js";
 import { swaggerSpec, swaggerUi } from "./swagger/swagger.js";
+import { registroMiddleware } from "./Middleware/registro.middleware.js"; // ← IMPORTANTE
 
 dotenv.config();
 
@@ -23,14 +24,20 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors());
 app.use(morgan("dev"));
+
+// ← ACTIVAR MIDDLEWARE DE REGISTRO
+app.use(registroMiddleware);
+
 app.use(express.json());
 
-app.use(
-  rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 100,
-  })
-);
+// ← NUEVO RATE LIMIT MÁS CLARO
+const limite = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 50,
+  message: "Demasiadas solicitudes, intenta más tarde",
+});
+
+app.use(limite);
 
 app.use(express.static("public"));
 
