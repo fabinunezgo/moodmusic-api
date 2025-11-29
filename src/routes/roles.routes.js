@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getRoles, createRole } from "../controllers/rolesController.js";
+import RolesController from "../controllers/rolesController.js";
 
 const router = Router();
 
-router.get("/", getRoles);
-router.post("/", createRole);
+// Rutas usando los métodos de la instancia
+router.get("/", (req, res) => RolesController.obtenerRoles(req, res));
+router.post("/", (req, res) => RolesController.crearRol(req, res));
 
 export default router;

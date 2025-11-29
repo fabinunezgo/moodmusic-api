@@ -61,4 +61,5 @@ class UsuariosService {
   }
 }
 
-export const UsuariosService = new UsuariosService();
+export default new UsuariosService();
+

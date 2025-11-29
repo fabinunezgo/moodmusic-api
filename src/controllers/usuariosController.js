@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import { UsuariosService } from "../services/usuarios.service.js"; // << en plural
+import UsuariosService from "../services/usuarios.service.js";
+
 
 export const getUsuarios = async (req, res, next) => {
   try {
