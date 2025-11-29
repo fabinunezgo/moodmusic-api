@@ -1,30 +1,8 @@
-
 import pool from "../config/db.js";
 
 export const getCanciones = async (req, res, next) => {
   try {
     const [rows] = await pool.query("SELECT * FROM canciones");
-
-import { pool } from "../config/db.js";
-export const getCanciones = async (req, res, next) => {
-  try {
-    const { emocion } = req.query; 
-
-    let sql = `
-      SELECT c.id, c.titulo, c.artista, e.nombre AS emocion
-      FROM canciones c
-      INNER JOIN emociones e ON c.emocion_id = e.id
-    `;
-    const params = [];
-
-   
-    if (emocion) {
-      sql += " WHERE e.nombre = ?";
-      params.push(emocion);
-    }
-
-    const [rows] = await pool.query(sql, params);
-
     res.json(rows);
   } catch (error) {
     next(error);
@@ -41,6 +19,7 @@ export const createCancion = async (req, res, next) => {
       return next(err);
     }
 
+    // Verificar emoción
     const [emociones] = await pool.query(
       "SELECT id FROM emociones WHERE id = ?",
       [emocion_id]
@@ -61,8 +40,9 @@ export const createCancion = async (req, res, next) => {
       id: result.insertId,
       titulo,
       artista,
-      emocion_id,
+      emocion_id
     });
+
   } catch (error) {
     next(error);
   }
