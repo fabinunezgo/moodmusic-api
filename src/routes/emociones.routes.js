@@ -6,7 +6,9 @@ import { crearEmocionValidator } from "../validators/emociones.validators.js";
 import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
+
 router.get("/", getEmociones);
+
 router.post(
   "/",
   authMiddleware,

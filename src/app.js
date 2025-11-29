@@ -11,7 +11,7 @@ import rolesRoutes from "./routes/roles.routes.js";
 import emocionesRoutes from "./routes/emociones.routes.js";
 import cancionesRoutes from "./routes/canciones.routes.js";
 
-import { pool } from "./config/db.js";
+import pool from "./config/db.js";   // ← CORREGIDO
 import { errorHandler } from "./Middleware/error.middleware.js";
 import { swaggerSpec, swaggerUi } from "./swagger/swagger.js";
 

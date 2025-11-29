@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js";
+import pool from "../config/db.js";
 import bcrypt from "bcrypt";
 
 export const getUsuarios = async (req, res, next) => {

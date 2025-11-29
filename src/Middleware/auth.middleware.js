@@ -1,11 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-
-
-  if (!token)
-    return res.status(401).json({ message: "Token no proporcionado" });
+  const header = req.headers.authorization; // ← ahora sí existe header
 
   if (!header) {
     return res.status(401).json({ message: "No se encontró el header Authorization" });
@@ -17,13 +13,13 @@ export const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "Formato de token inválido (use Bearer <token>)" });
   }
 
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; 
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token inválido" });
   }
 };
+
 

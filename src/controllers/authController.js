@@ -1,12 +1,13 @@
-import { pool } from "../config/db.js";
+import pool from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// Registrar usuario
 export const register = async (req, res) => {
   try {
     const { nombre, email, password, rol_id } = req.body;
 
-    // Verificar si el usuario ya existe
+    // Verificar si ya existe
     const [existing] = await pool.query(
       "SELECT * FROM usuarios WHERE email = ?",
       [email]
@@ -33,6 +34,7 @@ export const register = async (req, res) => {
   }
 };
 
+// Login
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -56,13 +58,13 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Credenciales incorrectas" });
     }
 
-    // Crear token con id y rol_id
+    // Crear token
     const payload = { id: user.id, rol_id: user.rol_id };
 
     const token = jwt.sign(
       payload,
-      process.env.JWT_SECRET,   
-      { expiresIn: "2h" } 
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
     );
 
     res.json({

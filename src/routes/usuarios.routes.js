@@ -30,7 +30,6 @@ router.post(
   createUsuario
 );
 
-
 router.put(
   "/:id",
   authMiddleware,
@@ -43,4 +42,3 @@ router.put(
 router.delete("/:id", authMiddleware, isAdmin, deleteUsuario);
 
 export default router;
-
