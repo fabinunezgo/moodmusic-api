@@ -12,7 +12,7 @@ import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
 
-// 🔍 Buscar canciones por nombre
+// Buscar canciones por nombre
 router.get("/buscar", buscarCanciones);
 
 // Obtener todas las canciones
