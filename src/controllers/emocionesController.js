@@ -1,18 +1,18 @@
 import pool from "../config/db.js";
 
-export const getEmociones = async (req, res) => {
+export const getEmociones = async (req, res, next) => {
   try {
     const [rows] = await pool.query("SELECT * FROM emociones");
     res.json(rows);
   } catch (error) {
-       next(error); 
+    next(error);
   }
 };
 
-export const createEmocion = async (req, res) => {
+export const createEmocion = async (req, res, next) => {
   try {
     const { nombre } = req.body;
-    // Validación
+
     if (!nombre || nombre.trim() === "") {
       return res.status(400).json({
         message: "El nombre de la emoción es obligatorio",
@@ -30,6 +30,6 @@ export const createEmocion = async (req, res) => {
     });
 
   } catch (error) {
-     next(error);
+    next(error);
   }
 };

@@ -1,12 +1,10 @@
-import pool from "../config/db.js";
 import bcrypt from "bcrypt";
+import { UsuariosService } from "../services/usuarios.service.js"; // << en plural
 
 export const getUsuarios = async (req, res, next) => {
   try {
-    const [rows] = await pool.query(
-      "SELECT id, nombre, email, rol_id FROM usuarios"
-    );
-    res.json(rows);
+    const usuarios = await UsuariosService.findAll();
+    res.json(usuarios);
   } catch (error) {
     next(error);
   }
@@ -15,19 +13,15 @@ export const getUsuarios = async (req, res, next) => {
 export const getUsuarioById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const usuario = await UsuariosService.findById(id);
 
-    const [rows] = await pool.query(
-      "SELECT id, nombre, email, rol_id FROM usuarios WHERE id = ?",
-      [id]
-    );
-
-    if (rows.length === 0) {
+    if (!usuario) {
       const err = new Error("Usuario no encontrado");
       err.status = 404;
       return next(err);
     }
 
-    res.json(rows[0]);
+    res.json(usuario);
   } catch (error) {
     next(error);
   }
@@ -36,53 +30,40 @@ export const getUsuarioById = async (req, res, next) => {
 export const createUsuario = async (req, res, next) => {
   try {
     const { nombre, email, password, rol_id } = req.body;
-    // Verificar si ya existe el correo
-    const [existe] = await pool.query(
-      "SELECT id FROM usuarios WHERE email = ?",
-      [email]
-    );
-    if (existe.length > 0) {
+
+    const existe = await UsuariosService.findByEmail(email);
+    if (existe) {
       const err = new Error("El correo ya está registrado");
       err.status = 400;
       return next(err);
     }
-    // Encriptar contraseña
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [result] = await pool.query(
-      "INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)",
-      [nombre, email, hashedPassword, rol_id]
-    );
-
-    res.status(201).json({
-      id: result.insertId,
+    const usuario = await UsuariosService.create({
       nombre,
       email,
+      password: hashedPassword,
       rol_id,
     });
+
+    res.status(201).json(usuario);
   } catch (error) {
     next(error);
   }
 };
-
 
 export const updateUsuario = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, email, password, rol_id } = req.body;
 
-    
-    const [rows] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
-      id,
-    ]);
-
-    if (rows.length === 0) {
+    const usuario = await UsuariosService.findById(id);
+    if (!usuario) {
       const err = new Error("Usuario no encontrado");
       err.status = 404;
       return next(err);
     }
-
-    const usuario = rows[0];
 
     const nuevoNombre = nombre ?? usuario.nombre;
     const nuevoEmail = email ?? usuario.email;
@@ -93,17 +74,14 @@ export const updateUsuario = async (req, res, next) => {
       nuevoPassword = await bcrypt.hash(password, 10);
     }
 
-    await pool.query(
-      "UPDATE usuarios SET nombre = ?, email = ?, password = ?, rol_id = ? WHERE id = ?",
-      [nuevoNombre, nuevoEmail, nuevoPassword, nuevoRolId, id]
-    );
-
-    res.json({
-      id,
+    const actualizado = await UsuariosService.update(id, {
       nombre: nuevoNombre,
       email: nuevoEmail,
+      password: nuevoPassword,
       rol_id: nuevoRolId,
     });
+
+    res.json(actualizado);
   } catch (error) {
     next(error);
   }
@@ -113,17 +91,14 @@ export const deleteUsuario = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const [rows] = await pool.query("SELECT id FROM usuarios WHERE id = ?", [
-      id,
-    ]);
-
-    if (rows.length === 0) {
+    const usuario = await UsuariosService.findById(id);
+    if (!usuario) {
       const err = new Error("Usuario no encontrado");
       err.status = 404;
       return next(err);
     }
 
-    await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
+    await UsuariosService.delete(id);
 
     res.json({ message: "Usuario eliminado correctamente" });
   } catch (error) {

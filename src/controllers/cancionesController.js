@@ -1,9 +1,9 @@
-import pool from "../config/db.js";
+import CancionesService from "../services/canciones.service.js";
 
 export const getCanciones = async (req, res, next) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM canciones");
-    res.json(rows);
+    const canciones = await CancionesService.obtenerTodas();
+    res.json(canciones);
   } catch (error) {
     next(error);
   }
@@ -19,45 +19,41 @@ export const createCancion = async (req, res, next) => {
       return next(err);
     }
 
-    const [emociones] = await pool.query(
-      "SELECT id FROM emociones WHERE id = ?",
-      [emocion_id]
-    );
+    const emocionExiste = await CancionesService.obtenerEmocionPorId(emocion_id);
 
-    if (emociones.length === 0) {
+    if (!emocionExiste) {
       const err = new Error("La emoción indicada no existe");
       err.status = 400;
       return next(err);
     }
 
-    const [result] = await pool.query(
-      "INSERT INTO canciones (titulo, artista, emocion_id) VALUES (?, ?, ?)",
-      [titulo, artista, emocion_id]
-    );
-
-    res.status(201).json({
-      id: result.insertId,
+    const nuevaCancion = await CancionesService.crear({
       titulo,
       artista,
-      emocion_id,
+      emocion_id
     });
+
+    res.status(201).json(nuevaCancion);
 
   } catch (error) {
     next(error);
   }
 };
 
-export const buscarCanciones = async (req, res) => {
+export const buscarCanciones = async (req, res, next) => {
   try {
     const { nombre } = req.query;
 
-    const [rows] = await pool.query(
-      "SELECT * FROM canciones WHERE titulo LIKE ?",
-      [`%${nombre}%`]
-    );
+    if (!nombre || nombre.trim() === "") {
+      return res.status(400).json({
+        message: "Debe enviar un nombre para buscar"
+      });
+    }
 
-    res.json(rows);
+    const canciones = await CancionesService.buscarPorTitulo(nombre);
+
+    res.json(canciones);
   } catch (error) {
-    res.status(500).json({ error: "Error al buscar canciones" });
+    next(error);
   }
 };

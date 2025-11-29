@@ -1,24 +1,34 @@
 import pool from "../config/db.js";
 
 class CancionesService {
-  async obtenerTodos() {
-    return await pool.query("SELECT * FROM canciones");
-  }
 
-  async obtenerPorId(id) {
-    return await pool.query("SELECT * FROM canciones WHERE id = ?", [id]);
+  async obtenerTodas() {
+    const [rows] = await pool.query("SELECT * FROM canciones");
+    return rows;
   }
 
   async crear(data) {
-    return await pool.query("INSERT INTO canciones SET ?", [data]);
+    const [result] = await pool.query(
+      "INSERT INTO canciones SET ?",
+      [data]
+    );
+    return { id: result.insertId, ...data };
   }
 
-  async actualizar(id, data) {
-    return await pool.query("UPDATE canciones SET ? WHERE id = ?", [data, id]);
+  async buscarPorTitulo(nombre) {
+    const [rows] = await pool.query(
+      "SELECT * FROM canciones WHERE titulo LIKE ?",
+      [`%${nombre}%`]
+    );
+    return rows;
   }
 
-  async eliminar(id) {
-    return await pool.query("DELETE FROM canciones WHERE id = ?", [id]);
+  async obtenerEmocionPorId(id) {
+    const [rows] = await pool.query(
+      "SELECT id FROM emociones WHERE id = ?",
+      [id]
+    );
+    return rows[0] || null;
   }
 }
 
