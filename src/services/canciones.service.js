@@ -35,7 +35,7 @@ class CancionesService {
     return rows[0] || null;
   }
 
-  // 🔵 Obtener canción por ID (para validar antes de actualizar)
+  // Obtener canción por ID
   async obtenerPorId(id) {
     const [rows] = await pool.query(
       "SELECT * FROM canciones WHERE id = ?",
@@ -44,13 +44,21 @@ class CancionesService {
     return rows[0] || null;
   }
 
-  //ACTUALIZAR CANCIÓN — ESTO ES LO QUE TE FALTABA
+  // Actualizar canción
   async actualizar(id, data) {
     const [result] = await pool.query(
       "UPDATE canciones SET ? WHERE id = ?",
       [data, id]
     );
+    return result.affectedRows > 0;
+  }
 
+  // Eliminar canción
+  async eliminar(id) {
+    const [result] = await pool.query(
+      "DELETE FROM canciones WHERE id = ?",
+      [id]
+    );
     return result.affectedRows > 0;
   }
 }

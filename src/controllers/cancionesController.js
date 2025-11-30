@@ -47,13 +47,12 @@ export const buscarCanciones = async (req, res, next) => {
 
     const canciones = await CancionesService.buscarPorTitulo(nombre);
     res.json(canciones);
-
   } catch (error) {
     next(error);
   }
 };
 
-// 🔥 NUEVO: ACTUALIZAR CANCIÓN
+// Actualizar canción
 export const actualizarCancion = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -79,9 +78,27 @@ export const actualizarCancion = async (req, res, next) => {
       message: "Canción actualizada correctamente",
       actualizada,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
+// Eliminar canción
+export const eliminarCancion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const eliminada = await CancionesService.eliminar(id);
+
+    if (!eliminada) {
+      return res.status(404).json({ message: "La canción no existe" });
+    }
+
+    res.json({
+      message: "Canción eliminada correctamente",
+      eliminada: true
+    });
+  } catch (error) {
+    next(error);
+  }
+};
