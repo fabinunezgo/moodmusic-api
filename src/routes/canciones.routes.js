@@ -2,7 +2,8 @@ import { Router } from "express";
 import { 
   getCanciones, 
   createCancion,
-  buscarCanciones
+  buscarCanciones,
+  actualizarCancion
 } from "../controllers/cancionesController.js";
 
 import { authMiddleware } from "../Middleware/auth.middleware.js";
@@ -12,13 +13,10 @@ import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
 
-// Buscar canciones por nombre
 router.get("/buscar", buscarCanciones);
 
-// Obtener todas las canciones
 router.get("/", getCanciones);
 
-// Crear canción (solo admin)
 router.post(
   "/",
   authMiddleware,
@@ -26,6 +24,14 @@ router.post(
   crearCancionValidator,
   validarCampos,
   createCancion
+);
+
+// 🔥 RUTA PUT
+router.put(
+  "/:id",
+  authMiddleware,
+  isAdmin,
+  actualizarCancion
 );
 
 export default router;

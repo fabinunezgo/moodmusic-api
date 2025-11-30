@@ -14,27 +14,25 @@ export const createCancion = async (req, res, next) => {
     const { titulo, artista, emocion_id } = req.body;
 
     if (!titulo || !artista || !emocion_id) {
-      const err = new Error("Título, artista y emoción son obligatorios");
-      err.status = 400;
-      return next(err);
+      return res.status(400).json({
+        message: "Título, artista y emoción son obligatorios",
+      });
     }
 
     const emocionExiste = await CancionesService.obtenerEmocionPorId(emocion_id);
-
     if (!emocionExiste) {
-      const err = new Error("La emoción indicada no existe");
-      err.status = 400;
-      return next(err);
+      return res.status(400).json({
+        message: "La emoción indicada no existe",
+      });
     }
 
     const nuevaCancion = await CancionesService.crear({
       titulo,
       artista,
-      emocion_id
+      emocion_id,
     });
 
     res.status(201).json(nuevaCancion);
-
   } catch (error) {
     next(error);
   }
@@ -43,17 +41,47 @@ export const createCancion = async (req, res, next) => {
 export const buscarCanciones = async (req, res, next) => {
   try {
     const { nombre } = req.query;
-
-    if (!nombre || nombre.trim() === "") {
-      return res.status(400).json({
-        message: "Debe enviar un nombre para buscar"
-      });
+    if (!nombre) {
+      return res.status(400).json({ message: "Debe enviar un nombre para buscar" });
     }
 
     const canciones = await CancionesService.buscarPorTitulo(nombre);
-
     res.json(canciones);
+
   } catch (error) {
     next(error);
   }
 };
+
+// 🔥 NUEVO: ACTUALIZAR CANCIÓN
+export const actualizarCancion = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { titulo, artista, emocion_id } = req.body;
+
+    const existe = await CancionesService.obtenerPorId(id);
+    if (!existe) {
+      return res.status(404).json({ message: "La canción no existe" });
+    }
+
+    const emocionExiste = await CancionesService.obtenerEmocionPorId(emocion_id);
+    if (!emocionExiste) {
+      return res.status(400).json({ message: "La emoción indicada no existe" });
+    }
+
+    const actualizada = await CancionesService.actualizar(id, {
+      titulo,
+      artista,
+      emocion_id,
+    });
+
+    res.json({
+      message: "Canción actualizada correctamente",
+      actualizada,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
