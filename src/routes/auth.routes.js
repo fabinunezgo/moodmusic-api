@@ -4,7 +4,21 @@ import { registerValidator, loginValidator } from "../validators/auth.validators
 import { validarCampos } from "../Middleware/validator.middleware.js";
 
 const router = Router();
-router.post("/register", registerValidator, validarCampos, register);
-router.post("/login", loginValidator, validarCampos, login);
+
+// Registro de usuario
+router.post(
+  "/register",
+  registerValidator,
+  validarCampos,
+  register
+);
+
+// Inicio de sesión
+router.post(
+  "/login",
+  loginValidator,
+  validarCampos,
+  login
+);
 
 export default router;

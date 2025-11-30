@@ -1,79 +1,70 @@
-import pool from "../config/db.js";
+import usuariosService from "../services/usuarios.service.js";
+import authService from "../services/auth.service.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+
 
 // Registrar usuario
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   try {
     const { nombre, email, password, rol_id } = req.body;
 
-    // Verificar si ya existe
-    const [existing] = await pool.query(
-      "SELECT * FROM usuarios WHERE email = ?",
-      [email]
-    );
-
-    if (existing.length > 0) {
+    // Verificar si el email ya existe
+    const existente = await usuariosService.findByEmail(email);
+    if (existente) {
       return res.status(400).json({ message: "El correo ya está registrado" });
     }
 
     // Encriptar contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insertar usuario
-    await pool.query(
-      "INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)",
-      [nombre, email, hashedPassword, rol_id]
-    );
+    // Crear usuario desde el servicio
+    const usuario = await usuariosService.create({
+      nombre,
+      email,
+      password: hashedPassword,
+      rol_id,
+    });
 
-    res.status(201).json({ message: "Usuario registrado correctamente" });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en el registro" });
-  }
-};
-
-// Login
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Buscar usuario
-    const [rows] = await pool.query(
-      "SELECT * FROM usuarios WHERE email = ?",
-      [email]
-    );
-
-    if (rows.length === 0) {
-      return res.status(400).json({ message: "Credenciales incorrectas" });
-    }
-
-    const user = rows[0];
-
-    // Comparar contraseña
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-      return res.status(400).json({ message: "Credenciales incorrectas" });
-    }
-
-    // Crear token
-    const payload = { id: user.id, rol_id: user.rol_id };
-
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "2h" }
-    );
-
-    res.json({
-      message: "Login exitoso",
-      token
+    res.status(201).json({
+      message: "Usuario registrado correctamente",
+      usuario,
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en el login" });
+    next(error);
+  }
+};
+
+
+// Login
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Buscar usuario por email
+    const usuario = await usuariosService.findByEmail(email);
+    if (!usuario) {
+      return res.status(400).json({ message: "Credenciales incorrectas" });
+    }
+
+    // Comparar contraseña
+    const esValida = await bcrypt.compare(password, usuario.password);
+    if (!esValida) {
+      return res.status(400).json({ message: "Credenciales incorrectas" });
+    }
+
+    // Crear token usando el servicio
+    const token = authService.generarToken({
+      id: usuario.id,
+      rol_id: usuario.rol_id,
+    });
+
+    res.json({
+      message: "Login exitoso",
+      token,
+    });
+
+  } catch (error) {
+    next(error);
   }
 };
