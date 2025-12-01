@@ -1,29 +1,47 @@
 import pool from "../config/db.js";
 
 class EmocionesService {
-  async obtenerTodos() {
+
+  // Obtener todas
+  async obtenerTodas() {
     const [rows] = await pool.query("SELECT * FROM emociones");
     return rows;
   }
 
-  async obtenerPorId(id) {
-    const [rows] = await pool.query("SELECT * FROM emociones WHERE id = ?", [id]);
-    return rows[0] || null;
-  }
-
+  // Crear emoción
   async crear(data) {
-    const [result] = await pool.query("INSERT INTO emociones SET ?", [data]);
+    const [result] = await pool.query(
+      "INSERT INTO emociones SET ?",
+      [data]
+    );
     return { id: result.insertId, ...data };
   }
 
-  async actualizar(id, data) {
-    await pool.query("UPDATE emociones SET ? WHERE id = ?", [data, id]);
-    return { id, ...data };
+  // Obtener por ID
+  async obtenerPorId(id) {
+    const [rows] = await pool.query(
+      "SELECT * FROM emociones WHERE id = ?",
+      [id]
+    );
+    return rows[0] || null;
   }
 
+  // Actualizar emoción
+  async actualizar(id, data) {
+    const [result] = await pool.query(
+      "UPDATE emociones SET ? WHERE id = ?",
+      [data, id]
+    );
+    return result.affectedRows > 0;
+  }
+
+  // Eliminar emoción
   async eliminar(id) {
-    await pool.query("DELETE FROM emociones WHERE id = ?", [id]);
-    return true;
+    const [result] = await pool.query(
+      "DELETE FROM emociones WHERE id = ?",
+      [id]
+    );
+    return result.affectedRows > 0;
   }
 }
 

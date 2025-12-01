@@ -1,32 +1,67 @@
-import pool from "../config/db.js";
+import EmocionesService from "../services/emociones.service.js";
 
-export const getEmociones = async (req, res, next) => {
+export const obtenerEmociones = async (req, res, next) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM emociones");
-    res.json(rows);
+    const emociones = await EmocionesService.obtenerTodas();
+    res.json(emociones);
   } catch (error) {
     next(error);
   }
 };
 
-export const createEmocion = async (req, res, next) => {
+export const crearEmocion = async (req, res, next) => {
   try {
     const { nombre } = req.body;
 
-    if (!nombre || nombre.trim() === "") {
+    if (!nombre) {
       return res.status(400).json({
-        message: "El nombre de la emoción es obligatorio",
+        message: "El nombre de la emoción es obligatorio"
       });
     }
 
-    const [result] = await pool.query(
-      "INSERT INTO emociones (nombre) VALUES (?)",
-      [nombre]
-    );
+    const creada = await EmocionesService.crear({ nombre });
+    res.status(201).json(creada);
 
-    res.status(201).json({
-      id: result.insertId,
-      nombre,
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const actualizarEmocion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { nombre } = req.body;
+
+    const existe = await EmocionesService.obtenerPorId(id);
+    if (!existe) {
+      return res.status(404).json({ message: "La emoción no existe" });
+    }
+
+    await EmocionesService.actualizar(id, { nombre });
+
+    res.json({
+      message: "Emoción actualizada correctamente",
+      actualizada: true
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const eliminarEmocion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const eliminada = await EmocionesService.eliminar(id);
+
+    if (!eliminada) {
+      return res.status(404).json({ message: "La emoción no existe" });
+    }
+
+    res.json({
+      message: "Emoción eliminada correctamente",
+      eliminada: true
     });
 
   } catch (error) {
