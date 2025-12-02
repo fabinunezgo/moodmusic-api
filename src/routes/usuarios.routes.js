@@ -15,3 +15,6 @@ router.put("/actualizar/:id", usuariosController.actualizarUsuario);
 router.delete("/eliminar/:id", usuariosController.eliminarUsuario);
 
 module.exports = router;
+
+export default router;
+
