@@ -1,44 +1,17 @@
-import { Router } from "express";
-import {
-  getUsuarios,
-  getUsuarioById,
-  createUsuario,
-  updateUsuario,
-  deleteUsuario,
-} from "../controllers/usuariosController.js";
+const express = require("express");
+const router = express.Router();
+const usuariosController = require("../controllers/usuariosController");
 
-import { authMiddleware } from "../Middleware/auth.middleware.js";
-import { isAdmin } from "../Middleware/role.middleware.js";
-import { validarCampos } from "../Middleware/validator.middleware.js";
-import {
-  crearUsuarioValidator,
-  actualizarUsuarioValidator,
-} from "../validators/usuarios.validators.js";
+// Obtener todos los usuarios
+router.get("/", usuariosController.obtenerUsuarios);
 
-const router = Router();
+// Crear usuario
+router.post("/crear", usuariosController.crearUsuario);
 
-router.get("/", authMiddleware, isAdmin, getUsuarios);
+// Actualizar usuario
+router.put("/actualizar/:id", usuariosController.actualizarUsuario);
 
-router.get("/:id", authMiddleware, isAdmin, getUsuarioById);
+// Eliminar usuario
+router.delete("/eliminar/:id", usuariosController.eliminarUsuario);
 
-router.post(
-  "/",
-  authMiddleware,
-  isAdmin,
-  crearUsuarioValidator,
-  validarCampos,
-  createUsuario
-);
-
-router.put(
-  "/:id",
-  authMiddleware,
-  isAdmin,
-  actualizarUsuarioValidator,
-  validarCampos,
-  updateUsuario
-);
-
-router.delete("/:id", authMiddleware, isAdmin, deleteUsuario);
-
-export default router;
+module.exports = router;
