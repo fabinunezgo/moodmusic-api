@@ -1,10 +1,26 @@
 import { Router } from "express";
-import RolesController from "../controllers/rolesController.js";
+import {
+  obtenerRoles,
+  crearRol,
+  actualizarRol,
+  eliminarRol
+} from "../controllers/rolesController.js";
+
+import { authMiddleware } from "../Middleware/auth.middleware.js";
+import { isAdmin } from "../Middleware/role.middleware.js";
 
 const router = Router();
 
-// Rutas usando los métodos de la instancia
-router.get("/", (req, res) => RolesController.obtenerRoles(req, res));
-router.post("/", (req, res) => RolesController.crearRol(req, res));
+// Obtener todos los roles
+router.get("/", obtenerRoles);
+
+// Crear rol (solo admin)
+router.post("/", authMiddleware, isAdmin, crearRol);
+
+// Actualizar rol (solo admin)
+router.put("/:id", authMiddleware, isAdmin, actualizarRol);
+
+// Eliminar rol (solo admin)
+router.delete("/:id", authMiddleware, isAdmin, eliminarRol);
 
 export default router;

@@ -1,33 +1,67 @@
 import RolesService from "../services/roles.service.js";
 
-class RolesController {
-
-  async obtenerRoles(req, res) {
-    try {
-      const roles = await RolesService.obtenerTodos();
-      res.json(roles);
-    } catch (error) {
-      console.error("Error al obtener roles:", error);
-      res.status(500).json({ message: "Error al obtener roles" });
-    }
+export const obtenerRoles = async (req, res, next) => {
+  try {
+    const roles = await RolesService.obtenerTodos();
+    res.json(roles);
+  } catch (error) {
+    next(error);
   }
+};
 
-  async crearRol(req, res) {
-    try {
-      const { nombre } = req.body;
+export const crearRol = async (req, res, next) => {
+  try {
+    const { nombre } = req.body;
 
-      if (!nombre) {
-        return res.status(400).json({ message: "El nombre es requerido" });
-      }
-
-      const nuevoRol = await RolesService.crear({ nombre });
-
-      res.status(201).json(nuevoRol);
-    } catch (error) {
-      console.error("Error al crear rol:", error);
-      res.status(500).json({ message: "Error al crear rol" });
+    if (!nombre) {
+      return res.status(400).json({ message: "El nombre del rol es obligatorio" });
     }
-  }
-}
 
-export default new RolesController();
+    const nuevo = await RolesService.crear(nombre);
+    res.status(201).json(nuevo);
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const actualizarRol = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { nombre } = req.body;
+
+    const existe = await RolesService.obtenerPorId(id);
+    if (!existe) {
+      return res.status(404).json({ message: "El rol no existe" });
+    }
+
+    const actualizado = await RolesService.actualizar(id, nombre);
+    res.json({
+      message: "Rol actualizado correctamente",
+      actualizado
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const eliminarRol = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const eliminado = await RolesService.eliminar(id);
+
+    if (!eliminado) {
+      return res.status(404).json({ message: "El rol no existe o está en uso" });
+    }
+
+    res.json({
+      message: "Rol eliminado correctamente",
+      eliminado: true
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
