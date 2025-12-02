@@ -45,7 +45,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas API
 app.use("/api/auth", authRoutes);
-app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/users", usuariosRoutes);
 app.use("/api/roles", rolesRoutes);
 app.use("/api/emociones", emocionesRoutes);
 app.use("/api/canciones", cancionesRoutes);
