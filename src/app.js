@@ -11,52 +11,60 @@ import rolesRoutes from "./routes/roles.routes.js";
 import emocionesRoutes from "./routes/emociones.routes.js";
 import cancionesRoutes from "./routes/canciones.routes.js";
 
+import playlistRoutes from "./routes/playlist.routes.js";
+import playlistCancionRoutes from "./routes/playlistCancion.routes.js";
+
 import pool from "./config/db.js";
 import { errorHandler } from "./Middleware/error.middleware.js";
 import { swaggerSpec, swaggerUi } from "./swagger/swagger.js";
-import { registroMiddleware } from "./Middleware/registro.middleware.js"; // ← IMPORTANTE
-
-import playlistRoutes from "./routes/playlist.routes.js";
-import playlistCancionRoutes from "./routes/playlistCancion.routes.js";
+import { registroMiddleware } from "./Middleware/registro.middleware.js";
 
 dotenv.config();
 
 const app = express();
 
+// Seguridad básica
 app.use(helmet({ contentSecurityPolicy: false }));
 
+// CORS
 app.use(cors());
+
+// Logs HTTP
 app.use(morgan("dev"));
 
-app.use("/api/playlists", playlistRoutes);
-app.use("/api/playlist-canciones", playlistCancionRoutes);
-
-// ← ACTIVAR MIDDLEWARE DE REGISTRO
-app.use(registroMiddleware);
-
+// IMPORTANTE: JSON primero
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// ← NUEVO RATE LIMIT MÁS CLARO
+// Rate limit
 const limite = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minuto
+  windowMs: 1 * 60 * 1000,
   max: 50,
   message: "Demasiadas solicitudes, intenta más tarde",
 });
-
 app.use(limite);
 
+// Archivos estáticos
 app.use(express.static("public"));
 
+// Middleware de registro personalizado
+app.use(registroMiddleware);
+
+// Rutas principales
+app.use("/api/playlists", playlistRoutes);
+app.use("/api/playlist-canciones", playlistCancionRoutes);
+
+// Swagger
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Rutas API
+// Rutas API originales
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usuariosRoutes);
 app.use("/api/roles", rolesRoutes);
 app.use("/api/emociones", emocionesRoutes);
 app.use("/api/canciones", cancionesRoutes);
 
-// Ruta de prueba BD
+// Prueba de conexión a la BD
 app.get("/db-check", async (req, res, next) => {
   try {
     const [rows] = await pool.query("SELECT 1 + 1 AS resultado");
@@ -71,6 +79,7 @@ app.get("/", (req, res) => {
   res.json({ message: "API MoodMusic funcionando" });
 });
 
+// Manejo de errores
 app.use(errorHandler);
 
 export default app;
