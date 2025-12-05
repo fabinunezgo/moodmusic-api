@@ -16,6 +16,9 @@ import { errorHandler } from "./Middleware/error.middleware.js";
 import { swaggerSpec, swaggerUi } from "./swagger/swagger.js";
 import { registroMiddleware } from "./Middleware/registro.middleware.js"; // ← IMPORTANTE
 
+import playlistRoutes from "./routes/playlist.routes.js";
+import playlistCancionRoutes from "./routes/playlistCancion.routes.js";
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +27,9 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors());
 app.use(morgan("dev"));
+
+app.use("/api/playlists", playlistRoutes);
+app.use("/api/playlist-canciones", playlistCancionRoutes);
 
 // ← ACTIVAR MIDDLEWARE DE REGISTRO
 app.use(registroMiddleware);
