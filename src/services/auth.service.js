@@ -38,8 +38,6 @@ class AuthService {
       }
     };
   }
-
-  // ESTA ES LA FUNCIÓN QUE TE FALTABA
   generarToken(payload) {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "4h" });
   }

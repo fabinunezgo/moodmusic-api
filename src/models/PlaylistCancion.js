@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 
 export const PlaylistCancion = {
 
-    // Crear relación playlist <-> canción
+    // Crear relación playlist-canción
     async addSong(playlist_id, cancion_id) {
         const [result] = await pool.query(
             "INSERT INTO playlist_canciones (playlist_id, cancion_id) VALUES (?, ?)",
@@ -11,7 +11,7 @@ export const PlaylistCancion = {
         return { id: result.insertId, playlist_id, cancion_id };
     },
 
-    // Obtener TODAS las canciones de una playlist
+    // Obtener todas las canciones de una playlist
     async findSongsByPlaylist(playlist_id) {
         const [rows] = await pool.query(
             `SELECT c.*
@@ -23,7 +23,7 @@ export const PlaylistCancion = {
         return rows;
     },
 
-    // Obtener todas las relaciones (opcional, útil para debug)
+    // Obtener todas las relaciones
     async getAllRelations() {
         const [rows] = await pool.query(
             "SELECT * FROM playlist_canciones"

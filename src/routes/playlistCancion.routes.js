@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 
-// CRUD playlist-canciones SIN autenticación para pruebas
+// CRUD playlist-canciones sin autenticación
 router.post("/", addSongToPlaylist);
 router.get("/:playlist_id", getSongsFromPlaylist);
 router.delete("/:id", removeSongFromPlaylist);

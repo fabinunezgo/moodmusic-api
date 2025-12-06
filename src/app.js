@@ -32,7 +32,7 @@ app.use(cors());
 // Logs HTTP
 app.use(morgan("dev"));
 
-// IMPORTANTE: JSON primero
+// JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -57,7 +57,7 @@ app.use("/api/playlist-canciones", playlistCancionRoutes);
 // Swagger
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Rutas API originales
+// Rutas API
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usuariosRoutes);
 app.use("/api/roles", rolesRoutes);
@@ -81,5 +81,4 @@ app.get("/", (req, res) => {
 
 // Manejo de errores
 app.use(errorHandler);
-
 export default app;

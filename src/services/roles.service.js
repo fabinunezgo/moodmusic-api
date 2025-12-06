@@ -39,9 +39,8 @@ class RolesService {
         [id]
       );
       return result.affectedRows > 0;
-
+    // El error ocurre si el rol está asignado a un usuario
     } catch (error) {
-      // El error ocurre si el rol está asignado a un usuario (foreign key)
       return false;
     }
   }

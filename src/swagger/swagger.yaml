@@ -2,84 +2,66 @@ openapi: 3.0.0
 info:
   title: MoodMusic API
   version: 1.0.0
-  description: API para sugerir canciones según emoción.
+  description: API para sugerir canciones según emoción, administrar playlists y manejar usuarios.
 
 servers:
   - url: http://localhost:3000
 
 tags:
   - name: Autenticación
-    description: Registro e inicio de sesión
   - name: Usuarios
-    description: Gestión de usuarios (solo admin)
-  - name: Canciones
-    description: Operaciones relacionadas con canciones
-  - name: Emociones
-    description: Gestión de emociones
   - name: Roles
-    description: Gestión de roles
+  - name: Emociones
+  - name: Canciones
+  - name: Playlists
+  - name: Playlist-Canciones
 
 paths:
+  #  AUTENTICACIÓN
   /api/auth/register:
     post:
-      tags:
-        - Autenticación
+      tags: [Autenticación]
       summary: Registrar usuario
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
+              $ref: "#/components/schemas/Register"
       responses:
         201:
-          description: Usuario registrado
+          description: Usuario registrado correctamente
         400:
           description: Error de validación
 
   /api/auth/login:
     post:
-      tags:
-        - Autenticación
+      tags: [Autenticación]
       summary: Iniciar sesión
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
+              $ref: "#/components/schemas/Login"
       responses:
         200:
           description: Sesión iniciada
         401:
           description: Credenciales incorrectas
 
-  /api/usuarios:
+  #  USUARIOS
+  /api/users:
     get:
-      tags:
-        - Usuarios
+      tags: [Usuarios]
       summary: Obtener todos los usuarios (solo admin)
       security:
         - bearerAuth: []
       responses:
         200:
           description: Lista de usuarios
-
     post:
-      tags:
-        - Usuarios
+      tags: [Usuarios]
       summary: Crear usuario (solo admin)
       security:
         - bearerAuth: []
@@ -88,30 +70,20 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                rol_id:
-                  type: integer
+              $ref: "#/components/schemas/User"
       responses:
         201:
           description: Usuario creado
 
-  /api/usuarios/{id}:
+  /api/users/{id}:
     get:
-      tags:
-        - Usuarios
-      summary: Obtener usuario por ID (solo admin)
+      tags: [Usuarios]
+      summary: Obtener usuario por ID
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
@@ -119,17 +91,15 @@ paths:
         200:
           description: Usuario encontrado
         404:
-          description: No encontrado
-
+          description: Usuario no encontrado
     put:
-      tags:
-        - Usuarios
-      summary: Actualizar usuario (solo admin)
+      tags: [Usuarios]
+      summary: Actualizar usuario
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
@@ -137,20 +107,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              $ref: "#/components/schemas/UserUpdate"
       responses:
         200:
           description: Usuario actualizado
-
     delete:
-      tags:
-        - Usuarios
-      summary: Eliminar usuario (solo admin)
+      tags: [Usuarios]
+      summary: Eliminar usuario
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
@@ -158,11 +126,53 @@ paths:
         200:
           description: Usuario eliminado
 
+  #  ROLES
+  /api/roles:
+    get:
+      tags: [Roles]
+      summary: Obtener roles
+      responses:
+        200:
+          description: Lista de roles
+    post:
+      tags: [Roles]
+      summary: Crear rol
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rol"
+      responses:
+        201:
+          description: Rol creado
+
+  #  EMOCIONES
+  /api/emociones:
+    get:
+      tags: [Emociones]
+      summary: Obtener emociones
+      responses:
+        200:
+          description: Lista de emociones
+    post:
+      tags: [Emociones]
+      summary: Crear emoción
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Emocion"
+      responses:
+        201:
+          description: Emoción creada
+
+  #  CANCIONES
   /api/canciones:
     get:
-      tags:
-        - Canciones
-      summary: Obtener canciones por emoción
+      tags: [Canciones]
+      summary: Obtener canciones filtradas por emoción
       parameters:
         - in: query
           name: emocion
@@ -170,12 +180,10 @@ paths:
             type: string
       responses:
         200:
-          description: Lista de canciones filtradas
-
+          description: Lista de canciones
     post:
-      tags:
-        - Canciones
-      summary: Crear canción (solo admin)
+      tags: [Canciones]
+      summary: Crear canción (admin)
       security:
         - bearerAuth: []
       requestBody:
@@ -183,73 +191,150 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                titulo:
-                  type: string
-                artista:
-                  type: string
-                emocion_id:
-                  type: integer
+              $ref: "#/components/schemas/Cancion"
       responses:
         201:
           description: Canción creada
 
-  /api/emociones:
+  #  PLAYLISTS (rutas reales)
+  /api/playlist:
     get:
-      tags:
-        - Emociones
-      summary: Obtener todas las emociones
+      tags: [Playlists]
+      summary: Obtener playlists del usuario autenticado
+      security:
+        - bearerAuth: []
       responses:
         200:
-          description: Lista de emociones
-
+          description: Lista de playlists
     post:
-      tags:
-        - Emociones
-      summary: Crear emoción (solo admin)
+      tags: [Playlists]
+      summary: Crear playlist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Playlist"
+      responses:
+        201:
+          description: Playlist creada
+
+  /api/playlist/{id}:
+    delete:
+      tags: [Playlists]
+      summary: Eliminar playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Playlist eliminada
+
+  #  PLAYLIST-CANCIONES (rutas reales)
+  /api/playlistCancion:
+    post:
+      tags: [Playlist-Canciones]
+      summary: Agregar canción a playlist
       security:
         - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
+              $ref: "#/components/schemas/PlaylistCancion"
       responses:
         201:
-          description: Emoción creada
+          description: Canción agregada a playlist
 
-  /api/roles:
-    get:
-      tags:
-        - Roles
-      summary: Obtener roles
+  /api/playlistCancion/{id}:
+    delete:
+      tags: [Playlist-Canciones]
+      summary: Quitar canción de playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         200:
-          description: Lista de roles
+          description: Canción eliminada de playlist
 
-    post:
-      tags:
-        - Roles
-      summary: Crear rol
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-      responses:
-        201:
-          description: Rol creado
-
+# SCHEMAS
 components:
+
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+
+    Register:
+      type: object
+      required: [nombre, email, password]
+      properties:
+        nombre: { type: string }
+        email: { type: string }
+        password: { type: string }
+
+    Login:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+
+    User:
+      type: object
+      properties:
+        nombre: { type: string }
+        email: { type: string }
+        password: { type: string }
+        rol_id: { type: integer }
+
+    UserUpdate:
+      type: object
+      properties:
+        nombre: { type: string }
+        email: { type: string }
+        password: { type: string }
+        rol_id: { type: integer }
+
+    Rol:
+      type: object
+      properties:
+        nombre: { type: string }
+
+    Emocion:
+      type: object
+      properties:
+        nombre: { type: string }
+
+    Cancion:
+      type: object
+      properties:
+        titulo: { type: string }
+        artista: { type: string }
+        emocion_id: { type: integer }
+
+    Playlist:
+      type: object
+      properties:
+        nombre: { type: string }
+
+    PlaylistCancion:
+      type: object
+      properties:
+        playlist_id: { type: integer }
+        cancion_id: { type: integer }
