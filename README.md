@@ -77,8 +77,7 @@ API REST desarrollada en Node.js que recomienda música con base en emociones hu
 http://localhost:3000/docs/
 
 ## Despliegue de la API 
-
-[//URL de vercel.](https://www.phpmyadmin.co/)
+https://www.phpmyadmin.co/
 
 
 
