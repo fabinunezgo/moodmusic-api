@@ -65,12 +65,20 @@ app.use("/api/emociones", emocionesRoutes);
 app.use("/api/canciones", cancionesRoutes);
 
 // Prueba de conexión a la BD
-app.get("/db-check", async (req, res, next) => {
+app.get("/db-check", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT 1 + 1 AS resultado");
-    res.json({ message: "Conexión a MySQL exitosa", resultado: rows[0] });
+    const [rows] = await pool.query("SELECT COUNT(*) AS total FROM usuarios");
+    res.json({
+      success: true,
+      message: "Conexión a MySQL funcionando correctamente",
+      totalUsuarios: rows[0].total,
+    });
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      success: false,
+      message: "Error conectando a MySQL",
+      error: error.message,
+    });
   }
 });
 
@@ -81,4 +89,5 @@ app.get("/", (req, res) => {
 
 // Manejo de errores
 app.use(errorHandler);
+
 export default app;
