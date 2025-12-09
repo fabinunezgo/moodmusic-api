@@ -1,20 +1,25 @@
-import { PlaylistCancion } from "../models/playlistCancion.js";
+import { PlaylistCancion } from "../models/PlaylistCancion.js";
 
-export const playlistCancionService = {
+const addSong = async (playlist_id, cancion_id) => {
+  return await PlaylistCancion.addSong(playlist_id, cancion_id);
+};
 
-  async addRelation(playlist_id, cancion_id) {
-    return await PlaylistCancion.addSong(playlist_id, cancion_id);
-  },
+const getSongsByPlaylist = async (playlist_id) => {
+  return await PlaylistCancion.findSongsByPlaylist(playlist_id);
+};
 
-  async getRelationsByPlaylist(playlist_id) {
-    return await PlaylistCancion.findSongsByPlaylist(playlist_id);
-  },
+const removeSong = async (id) => {
+  return await PlaylistCancion.removeSong(id);
+};
 
-  async getAllRelations() {
-    return await PlaylistCancion.getAllRelations();
-  },
+const findRelationById = async (id) => {
+  const rows = await PlaylistCancion.getAllRelations();
+  return rows.find(r => r.id === Number(id)) || null;
+};
 
-  async deleteRelation(id) {
-    return await PlaylistCancion.removeSong(id);
-  }
+export default {
+  addSong,
+  getSongsByPlaylist,
+  removeSong,
+  findRelationById
 };
